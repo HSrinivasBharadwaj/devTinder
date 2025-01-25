@@ -4,16 +4,11 @@ const connectToDB = require('./config/database');
 const user = require('./models/user');
 const port = 7777;
 
+//Middleware for post request
+app.use(express.json())
 app.post("/signup",async(req,res) => {
-    const userObject = {
-        firstName: "Tharun",
-        lastName: "Kiran",
-        emailId: "tharun@gmail.com",
-        password: "testone",
-        age: 25,
-        gender: "male"
-    }
-    const User = new user(userObject);
+    //Reading the request
+    const User = new user(req.body);
     await User.save().then(() => {
         console.log("Data added successfully");
         res.send("User signed up successfully");
