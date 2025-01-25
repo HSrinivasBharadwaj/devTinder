@@ -2,20 +2,27 @@ const express = require('express');
 const app = express();
 const port = 7777;
 
+app.use("/user",(req,res) => {
+    res.send("Helllo")
+})
 
+app.get("/user",(req,res) => {
+    res.send("Hello srinivas")
+})
 
-app.use("/home",(req,res) => {
-    res.send("Hello from server")
+app.post("/user",(req,res) => {
+    res.send("Data poste")
+})
+
+app.delete("/user",(req,res) => {
+    res.send("Data Deleted Successfully")
+})
+
+app.put("/user",(req,res) => {
+    res.send("Data updated successfully")
 })
 
 
-app.use("/home/123",(req,res) => {
-    res.send("Home route")
-})
-
-app.use("/",(req,res) => {
-    res.send("Hello from home route")
-})
 app.listen(port,() => {
     console.log("Listening on port " + port)
 })
