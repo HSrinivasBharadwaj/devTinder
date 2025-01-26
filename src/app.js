@@ -74,7 +74,7 @@ app.patch("/user",async(req,res) => {
             password: "testOne",
             age: 21,
             gender: "female"
-        })
+        },{runValidators:true})
         return res.status(200).send(updateUser)
     } catch (error) {
         return res.status(404).send("Not able to update the user")
