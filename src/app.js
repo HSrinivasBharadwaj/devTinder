@@ -3,6 +3,7 @@ const app = express();
 const connectToDB = require("./config/database");
 const user = require("./models/user");
 const { SignUpValidateData } = require("./utils/validation");
+const {validateToken} = require('./middleware/auth')
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
@@ -45,7 +46,7 @@ app.post("/login", async (req, res) => {
     }
     const isPasswordValid = bcrypt.compare(password, findUser.password);
     if (isPasswordValid) {
-      const token = await jwt.sign({ _id: findUser.id }, "AuthToken");
+      const token = await jwt.sign({ _id: findUser.id }, "AuthToken",{expiresIn: "1h"});
       res.cookie("token", token);
       return res.status(200).send("User login successful");
     } else {
@@ -57,92 +58,25 @@ app.post("/login", async (req, res) => {
 });
 
 //Profile route
-app.get("/profile", async (req, res) => {
+app.get("/profile", validateToken,async (req, res) => {
   try {
-    const cookie = req.cookies;
-    const { token } = cookie;
-    // Validate the token
-    const decodedMessage = await jwt.verify(token, "AuthToken");
-    const { _id } = decodedMessage;
-    const getUser = await user.findById({ _id: _id });
-    if(!getUser) {
-      throw new Error("Couldn't find user")
-    }
-    res.send("Cookie sent successfully");
+    const getUser = req.getUser;
+    console.log("getUser",getUser)
   } catch (error) {
     res.status(500).send("Error fetching profile");
   }
 });
 
-//Get Request for all users
-app.get("/feed", async (req, res) => {
+//Send connection Request
+app.get("/sendConnectionRequest", validateToken,async (req, res) => {
   try {
-    const getAllUsers = await user.find({});
-    res.status(200).send(getAllUsers);
+    const getUser = req.getUser;
+    return res.status(200).send(getUser)
   } catch (error) {
-    res.status(404).send("Not able to get the users");
+    res.status(500).send("Error fetching profile");
   }
 });
 
-//Get Request by Email Id
-app.get("/user", async (req, res) => {
-  const emailId = req.body.emailId;
-  try {
-    const getUserByEmail = await user.find({ emailId: emailId });
-    return res.status(200).send(getUserByEmail);
-  } catch (error) {
-    res.status(401).send("Not able to find user by email");
-  }
-});
-
-//Delete By Id
-app.delete("/user", async (req, res) => {
-  const getUserId = req.body._id;
-  try {
-    const deleteUser = await user.findByIdAndDelete({ _id: getUserId });
-    return res.status(200).send(deleteUser);
-  } catch (error) {
-    res.status(401).send("Not able to delete user");
-  }
-});
-
-//Delete All
-app.delete("/users", async (req, res) => {
-  try {
-    const deleteUsers = await user.deleteMany();
-    return res.status(200).send(deleteUsers);
-  } catch (error) {
-    res.status(401).send("Deleted All the users");
-  }
-});
-
-//Update By Id
-app.patch("/user", async (req, res) => {
-  const getUserId = req.body._id;
-  const data = req.body;
-  const ALLOWED_UPDATES = ["firstName", "lastName", "password", "gender"];
-  const allow = Object.keys(data).every((k) => ALLOWED_UPDATES.includes(k));
-  if (!allow) {
-    throw new Error("Update not allowed");
-  }
-  try {
-    const updateUser = await user.findByIdAndUpdate(
-      { _id: getUserId },
-      {
-        firstName: "John",
-        lastName: "Doe",
-        emailId: "JohnDoe@email.com",
-        password: "testOne",
-        age: 21,
-        gender: "female",
-      },
-      { runValidators: true }
-    );
-    return res.status(200).send(updateUser);
-  } catch (error) {
-    return res.status(404).send("Not able to update the user");
-  }
-});
 
 connectToDB()
   .then(() => {
