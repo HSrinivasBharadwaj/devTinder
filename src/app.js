@@ -5,7 +5,6 @@ const user = require("./models/user");
 const { SignUpValidateData } = require("./utils/validation");
 const {validateToken} = require('./middleware/auth')
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const port = 7777;
 
@@ -44,9 +43,9 @@ app.post("/login", async (req, res) => {
     if (!findUser) {
       return res.status(404).send("Email Id not found");
     }
-    const isPasswordValid = bcrypt.compare(password, findUser.password);
+    const isPasswordValid = findUser.comparePassword(password)
     if (isPasswordValid) {
-      const token = await jwt.sign({ _id: findUser.id }, "AuthToken",{expiresIn: "1h"});
+      const token = await findUser.getJwt()
       res.cookie("token", token);
       return res.status(200).send("User login successful");
     } else {
