@@ -35,7 +35,7 @@ authRouter.post("/login", async (req, res) => {
       if (!findUser) {
         return res.status(404).send("Email Id not found");
       }
-      const isPasswordValid = findUser.comparePassword(password)
+      const isPasswordValid = await findUser.comparePassword(password)
       if (isPasswordValid) {
         const token = await findUser.getJwt()
         res.cookie("token", token);
@@ -44,7 +44,7 @@ authRouter.post("/login", async (req, res) => {
         throw new Error("Password is incorrect");
       }
     } catch (error) {
-      res.status(400).send("Error signing up user");
+      res.status(400).send("Invalid Credentials"+error);
     }
   });
 
