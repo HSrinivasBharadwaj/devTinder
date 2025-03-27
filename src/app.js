@@ -3,21 +3,23 @@ const app = express();
 const port = 3000;
 
 
+app.use("/",(req,res) => {
+    res.send("Hello from main route")
+})
 
+app.use("/test/123",(req,res) => {
+    res.send("Hello from test routes")
+})
 
 app.use("/test",(req,res) => {
-    res.send("Hello from test server")
+    res.send("Hello from test route")
 })
-
-
 
 app.use("/home",(req,res) => {
-    res.send("Hello from home page")
+    res.send("Hello from home route")
 })
 
-app.use("/",(req,res) => {
-    res.send("Main route from server")
-})
+
 
 app.listen(port,() => {
     console.log("Listening on port",port)
