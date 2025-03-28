@@ -1,12 +1,29 @@
 const express = require("express");
 const app = express();
+const connectDB = require('./config/database');
+const User = require('./models/user');
 const port = 3000;
-const {isAdminAuth} = require('./middlewares/auth')
 
-app.use("/admin/getAllUserData",isAdminAuth,async(req,res) => {
-   res.status(200).send("Data fetched successfully") 
+//Post Request for adding the data to the database
+app.post("/signup",async(req,res) => {
+    const user = new User({
+        firstName: "Srinivas",
+        lastName: "Bharadwaj",
+        email: "srinivas@email.com",
+        password: "Hullur9606@",
+        gender: "male",
+        age: 30
+    })
+    await user.save();
+    res.status(200).send("User Added Successfully")
 })
 
-app.listen(port, () => {
-  console.log("Listening on port", port);
-});
+connectDB().then(() => {
+    console.log("Data base connected successfully")
+    app.listen(port, () => {
+        console.log("Listening on port", port);
+      });    
+}).catch((error) => {
+    console.log("Error",error)
+})
+
