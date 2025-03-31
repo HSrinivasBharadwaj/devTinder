@@ -51,10 +51,7 @@ profileRouter.patch("/profile/forgotPassword",validateAuth,async(req,res) => {
     }
 })
 
-//Req nundi password
-//Check for criteria like strong and all
-//hash the password
-//update in the database
+
 
 
 
