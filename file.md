@@ -20,3 +20,10 @@ userRouter
 /get /user/connections
 /get /user/requests
 
+
+//Send Connection Request
+1 Create a new model
+2 Imported to request file
+3. write api logic
+
+
