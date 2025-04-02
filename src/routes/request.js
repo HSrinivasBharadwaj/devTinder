@@ -9,23 +9,41 @@ connectionRouter.post("/request/sendConnectionRequest/:status/:touserId", valida
   try {
     const user = req.user;
     const fromUserId = user._id;
-    console.log(fromUserId)
     const toUserId = req.params.touserId;
     const status = req.params.status
     //Create a instance of the model
-    //should not allow accepted,rejected
     const ALLOWED_STATUS = ["interested","ignored"];
     if (!ALLOWED_STATUS.includes(status)) {
-      return res.status(400).json({ message: "Invalid status value" });
+      return res.status(400).json({message: "Invalid Status Type"})
     }
     const connectionRequest = new ConnectionRequest({
       fromUserId,
       toUserId,
       status
     })
-    //if connection already exists from a to b,dont send
-    //b to a should not send
-    //Should not send from to from
+
+    //If i already send connection Request to B should not send again
+    const existingConnectionRequest = await ConnectionRequest.findOne({
+      $or: [
+        {fromUserId,toUserId},
+        {fromUserId:toUserId,toUserId:fromUserId}
+      ]
+    })
+
+    if (existingConnectionRequest) {
+      return res.status(400).json({message: "Connection Request Already Sent"})
+    }
+
+    const findUserId = await ConnectionRequest.findById(toUserId);
+    if (!findUserId) {
+      return res.status(400).json({message: "Invalid User Id"})
+    }
+    
+
+    //I should not send connectionRequest to myself
+    if (fromUserId.equals(toUserId)) {
+      return res.status(500).json({message: "Cant Send request to yourself"})
+    }
     
     await connectionRequest.save()
     return res
