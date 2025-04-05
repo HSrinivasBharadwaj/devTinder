@@ -50,7 +50,6 @@ connectionRouter.post(
         status,
       });
 
-
       await connectionRequest.save();
       return res
         .status(200)
