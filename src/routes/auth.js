@@ -26,6 +26,7 @@ authRouter.post("/signup", async (req, res) => {
 });
 
 authRouter.post("/login", async (req, res) => {
+  console.log("req",req.body)
   try {
     const { email, password } = req.body;
     if (!validator.isEmail(email)) {
@@ -45,22 +46,30 @@ authRouter.post("/login", async (req, res) => {
     if (isPasswordCorrect) {
       //Generating the json webtoken;
       const token = await jwt.sign({ _id: isUser._id }, "Hullur9606@", {
-        expiresIn: "1h",
+        expiresIn: "10h",
       });
-      res.cookie("token", token);
-      res.status(200).send("Login was successful");
+      
+      res.cookie("token", token,
+        {
+          httpOnly:true,
+          secure:false,
+          sameSite: "lax"
+
+        }
+      );
+      return res.status(200).send(isUser);
     } else {
       res.status(500).send("Invalid Credentials, please try again later");
     }
   } catch (error) {
-    res.status(500).send("Error while logging in");
+    res.status(500).json({message:"Invalid Credentials"});
   }
 });
 
 authRouter.post("/logout", async (req, res) => {
   //Remove the cookie then it will logout
   res.cookie("token",null,{
-    expires: new Date().now()
+    expires: new Date(Date.now())
   })
   res.status(200).json({message: "User Logout successfully"})
 });

@@ -6,7 +6,7 @@ const validateAuth = async(req, res, next) => {
     const cookies = req.cookies;
     const { token } = cookies;
     if (!token) {
-      throw new Error("Token is not Valid");
+      return res.status(401).json({message: "Unauthorized"})
     }
     const decodedObj = jwt.verify(token, "Hullur9606@");
     const {_id} = decodedObj;
@@ -17,6 +17,7 @@ const validateAuth = async(req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.log("error",error)
     return res.status(500).send("Failed to authenticate the user");
   }
 };
