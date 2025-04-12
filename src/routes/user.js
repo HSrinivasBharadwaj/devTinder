@@ -44,7 +44,7 @@ userRouter.get("/user/connections", validateAuth, async (req, res) => {
     });
     return res
       .status(200)
-      .json({ message: "Connection Requests are", getData });
+      .json({ message: "Connection Requests are", data:getData });
   } catch (error) {
     console.log(error);
     return res
