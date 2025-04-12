@@ -14,7 +14,7 @@ const validateSignUpData = async (data) => {
 
 const validateEditProfileData = async(data) => {
     console.log("data",data)
-    const ALLOWED_UPDATES = ["firstName","skills","about","photoUrl"];
+    const ALLOWED_UPDATES = ["firstName","lastName","skills","about","photoUrl"];
     const isEditAllowed = Object.keys(data).every((field) => ALLOWED_UPDATES.includes(field));
     console.log(isEditAllowed)
     return isEditAllowed
