@@ -3,7 +3,7 @@ const app = express();
 const connectDB = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require('cors')
-const port = 3000;
+const port = 7777;
 
 app.use(express.json());
 app.use(cookieParser());
